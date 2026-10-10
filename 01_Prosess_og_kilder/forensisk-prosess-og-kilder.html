@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Forensisk prosess og kilder</title>
+<style>
+/* Offline-kopi: bruker systemfonter, ingen eksterne filer */
+:root{
+  --bg:#f5f7f8; --paper:#ffffff; --ink:#16212b; --muted:#56636f; --line:#d5dde3;
+  --accent:#1f5f8b; --accent-soft:#e3eef6; --seal:#b5541c; --seal-soft:#fbeee5;
+  --display:"Segoe UI Semibold","Helvetica Neue",Arial,sans-serif;
+  --body:"Segoe UI",system-ui,-apple-system,sans-serif;
+  --mono:Consolas,ui-monospace,Menlo,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f151b; --paper:#161e26; --ink:#e3e9ee; --muted:#9aa8b4; --line:#2b3742;
+  --accent:#7db7e0; --accent-soft:#1b2c3a; --seal:#e9915a; --seal-soft:#33231a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f151b; --paper:#161e26; --ink:#e3e9ee; --muted:#9aa8b4; --line:#2b3742;
+  --accent:#7db7e0; --accent-soft:#1b2c3a; --seal:#e9915a; --seal-soft:#33231a; color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 var(--body);padding-inline:16px;padding-block:32px 64px}
+.wrap{max-width:860px;margin:0 auto;display:flex;flex-direction:column;gap:48px}
+h1,h2,h3{font-family:var(--display);line-height:1.2;margin:0}
+h1{font-size:clamp(1.9rem,4.5vw,2.6rem);font-weight:800}
+h2{font-size:1.5rem;font-weight:700}
+h3{font-size:1.1rem;font-weight:700}
+p{margin:0;max-width:68ch}
+a{color:var(--accent);text-underline-offset:2px}
+.eyebrow{font:500 .75rem/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+section{display:flex;flex-direction:column;gap:16px}
+header{display:flex;flex-direction:column;gap:12px;border-bottom:2px solid var(--ink);padding-bottom:20px}
+.lead{font-size:1.08rem;color:var(--muted)}
+.note{background:var(--seal-soft);border:1px solid var(--seal);border-radius:6px;padding:14px 16px;display:flex;flex-direction:column;gap:6px}
+.note strong{color:var(--seal)}
+.info{background:var(--accent-soft);border-radius:6px;padding:14px 16px;display:flex;flex-direction:column;gap:6px}
+ol.phases{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+ol.phases>li{display:grid;grid-template-columns:3.2rem 1fr;gap:16px;padding:20px 0;border-bottom:1px solid var(--line)}
+.tag{font:500 .8rem/1 var(--mono);color:var(--paper);background:var(--accent);border-radius:3px;padding:6px 0;text-align:center;align-self:start}
+.phase-body{display:flex;flex-direction:column;gap:8px;min-width:0}
+.slide{font-family:var(--mono);font-size:.85rem;color:var(--muted)}
+ul{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:4px;max-width:68ch}
+.src{font-size:.88rem;color:var(--muted)}
+.src a{font-weight:600}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:6px;background:var(--paper)}
+table{border-collapse:collapse;width:100%;font-size:.92rem}
+th,td{text-align:left;vertical-align:top;padding:10px 12px;border-bottom:1px solid var(--line)}
+th{font:600 .72rem/1.3 var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);background:var(--bg)}
+tr:last-child td{border-bottom:0}
+.pill{display:inline-block;font:500 .7rem/1 var(--mono);padding:4px 6px;border-radius:3px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.pill.free{border-color:var(--accent);color:var(--accent)}
+.pill.paid{border-color:var(--seal);color:var(--seal)}
+.steps{counter-reset:s;list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px}
+.steps li{counter-increment:s;display:grid;grid-template-columns:2rem 1fr;gap:12px;align-items:start}
+.steps li::before{content:counter(s);font:500 .85rem/1.9 var(--mono);color:var(--accent);border:1px solid var(--accent);border-radius:50%;width:1.9rem;height:1.9rem;text-align:center}
+.steps li>div{min-width:0}
+.hash{font-family:var(--mono);font-size:.78rem;color:var(--muted);word-break:break-all}
+footer{font-size:.85rem;color:var(--muted);border-top:1px solid var(--line);padding-top:16px}
+@media (max-width:480px){ol.phases>li{grid-template-columns:1fr;gap:8px}.tag{justify-self:start;padding:6px 10px}}
+@media print{body{background:#fff}.tablewrap{overflow:visible}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <span class="eyebrow">Digital forensic lab · Høyskolen Kristiania</span>
+  <h1>Forensisk prosess og kilder</h1>
+  <p class="lead">Gjennomgang av forelesningsbildene «Prosessen» og «Forensics report», med de profesjonelle standardene og veiledningene som beskriver riktig startprosedyre.</p>
+</header>
+
+<section>
+  <span class="eyebrow">Lysbilde 1</span>
+  <h2>Prosessen, fase for fase</h2>
+  <p>Modellen på bildet er en vanlig femfasemodell. Den er sekvensiell, men dokumentasjon er i praksis noe du gjør hele veien, ikke et eget steg etter analysen.</p>
+  <ol class="phases">
+    <li><span class="tag">1</span><div class="phase-body">
+      <h3>Identifisering</h3>
+      <span class="slide">Bildet: utgangspunkt for etterforskning · identifisere ressurser og involverte enheter</span>
+      <p>Her avklarer du <em>hva</em> du skal svare på og <em>hvor</em> bevisene kan finnes, før du rører noe.</p>
+      <ul>
+        <li>Mandat: hva er spørsmålet, hvem bestilte oppdraget, og hvilken hjemmel har du (samtykke, beslag, intern undersøkelse)?</li>
+        <li>Kartlegg enheter: PC-er, telefoner, minnepinner, skylagring, ruter, logger. Ta bilder av åstedet slik det er.</li>
+        <li>Vurder hva som er flyktig. RAM, nettverkstilkoblinger og kjørende prosesser forsvinner når maskinen slås av, så rekkefølgen betyr noe.</li>
+      </ul>
+      <p class="src">Kilder: <a href="https://www.iso.org/standard/44381.html">ISO/IEC 27037</a> (identifisering), <a href="https://www.rfc-editor.org/rfc/rfc3227">RFC 3227</a> (rekkefølge etter flyktighet), <a href="https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-86.pdf">NIST SP 800-86</a> kap. 3.1</p>
+    </div></li>
+    <li><span class="tag">2</span><div class="phase-body">
+      <h3>Preservering</h3>
+      <span class="slide">Bildet: isolere, sikre og preservere data involvert · chain of custody</span>
+      <p>Målet er at beviset ikke endres, og at du kan bevise at det ikke er endret.</p>
+      <ul>
+        <li>Isoler: koble fra nettverk, flymodus eller Faraday-pose for telefoner, slik at ingen kan fjernslette eller endre.</li>
+        <li>Les disken gjennom en write blocker (for eksempel Tableau-broen fra labben), aldri gjennom en vanlig dock.</li>
+        <li>Lag et bit-for-bit image (E01 eller raw/dd), beregn hash av kilde og image, og sjekk at de er like.</li>
+        <li>Chain of custody: et skjema som viser hvem som har hatt beviset, når, hvor og hvorfor, fra beslag til retten.</li>
+      </ul>
+      <p class="src">Kilder: <a href="https://training-on-eppo.era.int/EPPO/kiosk/pdf/ACPO_Good_Practice_Guide.pdf">ACPO prinsipp 1 og 2</a>, <a href="https://www.swgde.org/wp-content/uploads/2024/03/2023-06-15-SWGDE-Best-Practices-for-Computer-Forensic-Acquisitions-17-F-002-2.0.pdf">SWGDE Computer Forensic Acquisitions</a>, <a href="https://www.nist.gov/itl/ssd/software-quality-group/computer-forensics-tool-testing-program-cftt">NIST CFTT</a> (testrapporter for write blockere)</p>
+    </div></li>
+    <li><span class="tag">3</span><div class="phase-body">
+      <h3>Analyse</h3>
+      <span class="slide">Bildet: verktøy og teknikker · prosessere data (play books) · analysere resultater</span>
+      <p>Du jobber alltid på kopien, aldri på originalen.</p>
+      <ul>
+        <li>Verktøy og teknikker: Autopsy, FTK, X-Ways, Volatility, Plaso. Verktøyene skal være validerte, og du noterer versjonsnummer.</li>
+        <li>Playbooks er faste oppskrifter for vanlige oppgaver (tidslinje, filgjenoppretting, nettleserhistorikk), slik at to analytikere gjør det likt.</li>
+        <li>Analyser resultatene opp mot hypoteser. Let også etter spor som taler <em>mot</em> hypotesen din.</li>
+      </ul>
+      <p class="src">Kilder: <a href="https://www.iso.org/standard/44405.html">ISO/IEC 27041</a> (validering av metoder), <a href="https://www.iso.org/standard/44406.html">ISO/IEC 27042</a> (analyse og tolkning), <a href="https://unodc.org/e4j/data/_university_uni_/best_practice_manual_for_the_forensic_examination_of_digital_technology.html?lng=en">ENFSI BPM-FIT</a></p>
+    </div></li>
+    <li><span class="tag">4</span><div class="phase-body">
+      <h3>Dokumentasjon</h3>
+      <span class="slide">Bildet: isolere, sikre og preservere data involvert</span>
+      <p>Hva dokumentasjon innebærer:</p>
+      <ul>
+        <li>Fortløpende notater («bench notes»): hva du gjorde, når, med hvilket verktøy og versjon, og hva resultatet ble.</li>
+        <li>Hashverdier, serienumre, bilder av utstyret og chain of custody-skjemaet.</li>
+        <li>Nok detaljer til at en annen analytiker kan gjenta arbeidet og få samme resultat (etterprøvbarhet).</li>
+      </ul>
+      <p class="src">Kilder: <a href="https://training-on-eppo.era.int/EPPO/kiosk/pdf/ACPO_Good_Practice_Guide.pdf">ACPO prinsipp 3</a> (audit trail), <a href="https://www.iso.org/standard/44407.html">ISO/IEC 27043</a> (prosessmodell der dokumentasjon går parallelt med alle faser)</p>
+    </div></li>
+    <li><span class="tag">5</span><div class="phase-body">
+      <h3>Presentasjon</h3>
+      <span class="slide">Bildet: produsere rapport som er forståelig for stakeholdere</span>
+      <p>Mottakeren er ofte jurist, leder eller dommer, ikke tekniker. Funnene skal være forståelige uten å miste presisjon, og du skal kunne forsvare dem i et avhør. Lysbilde 2 handler om nettopp denne rapporten.</p>
+      <p class="src">Kilder: <a href="https://www.forensicfocus.com/articles/writing-dfir-reports-a-primer/">Forensic Focus: Writing DFIR Reports</a>, <a href="https://www.gov.uk/government/publications/statutory-code-of-practice-for-forensic-science-activities">UK Forensic Science Regulator Code of Practice</a></p>
+    </div></li>
+  </ol>
+</section>
+
+<section>
+  <span class="eyebrow">Lysbilde 2</span>
+  <h2>Forensics report</h2>
+  <p>Hovedpoenget er at rapporten skrives for andre, men også for deg selv om et halvt år, når du har glemt detaljene og noen stiller spørsmål ved funnene.</p>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Krav på lysbildet</th><th>Hva det betyr</th><th>Seksjon i Brunty-malen</th></tr></thead>
+    <tbody>
+      <tr><td>Hva er hensikten med oppdraget</td><td>Spørsmålet du skal besvare, hvem som bestilte, og eventuelle søkeord eller hypoteser.</td><td>Objectives</td></tr>
+      <tr><td>Hvem og når</td><td>Analytiker, oppdragsgiver, dato og klokkeslett for beslag, imaging og analyse.</td><td>Title page, Overview</td></tr>
+      <tr><td>Hva som er gjort</td><td>Hvert steg, med verktøy og versjon, slik at det kan gjentas.</td><td>Forensic Analysis (Steps Taken)</td></tr>
+      <tr><td>Hvilke funn som ble gjort</td><td>Funnene forklart for en lekperson og knyttet til målene.</td><td>Relevant Findings</td></tr>
+      <tr><td>Konklusjon</td><td>Kort svar på spørsmålet, uten å påstå mer enn funnene bærer.</td><td>Conclusion</td></tr>
+      <tr><td>Referanser til hardware og arkivsak</td><td>Bevisnummer, merke, modell, serienummer, hashverdier og saksnummer.</td><td>Evidence, Exhibits</td></tr>
+    </tbody>
+  </table></div>
+  <p>Eksempel på en bevisreferanse i rapporten:</p>
+  <p class="hash">Bevis 01 · Seagate ST1000DM010 · S/N Z9A1XXXX · image sak-2026-014_bevis01.E01 · SHA-256 kilde = image ✓</p>
+
+  <h3>Collection → Examination → Analysis → Reporting</h3>
+  <p>Pilene nederst på lysbildet er de fire fasene fra NIST SP 800-86. De beskriver samme arbeid som femfasemodellen, bare delt annerledes:</p>
+  <div class="tablewrap"><table>
+    <thead><tr><th>NIST SP 800-86</th><th>Femfasemodellen</th><th>Innhold</th></tr></thead>
+    <tbody>
+      <tr><td>Collection</td><td>Identifisering + Preservering</td><td>Finne, sikre og avbilde data med integritet bevart.</td></tr>
+      <tr><td>Examination</td><td>Analyse (prosessere data)</td><td>Hente ut og filtrere relevante data fra imaget, for eksempel filgjenoppretting og parsing.</td></tr>
+      <tr><td>Analysis</td><td>Analyse (analysere resultater)</td><td>Tolke dataene og trekke slutninger opp mot spørsmålet.</td></tr>
+      <tr><td>Reporting</td><td>Dokumentasjon + Presentasjon</td><td>Rapporten og forklaringen til mottakeren.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section>
+  <span class="eyebrow">Startprosedyre</span>
+  <h2>Riktig rekkefølge når du starter</h2>
+  <p>Dette er en sammenstilling av ACPO, ISO/IEC 27037, SWGDE og NIST, tilpasset en disk i labben. Rekkefølgen er poenget.</p>
+  <ol class="steps">
+    <li><div><strong>Avklar mandat og hjemmel.</strong> Skriv ned spørsmålet og hvem som har gitt deg tillatelse.</div></li>
+    <li><div><strong>Start notatene.</strong> Dato, klokkeslett, saksnummer. Alt etter dette skrives ned fortløpende.</div></li>
+    <li><div><strong>Fotografer og registrer.</strong> Enheten slik du fant den, merke, modell, serienummer, tilkoblede kabler.</div></li>
+    <li><div><strong>Vurder om maskinen er på.</strong> Er den på, sikre flyktige data først (RAM-dump) etter RFC 3227. Er den av, la den være av.</div></li>
+    <li><div><strong>Isoler og merk beviset.</strong> Koble fra nettverk, legg i beviskonvolutt, start chain of custody-skjemaet.</div></li>
+    <li><div><strong>Test write blockeren.</strong> Bekreft at den faktisk blokkerer skriving før bevisdisken kobles til.</div></li>
+    <li><div><strong>Lag image.</strong> Bit-for-bit, helst E01 med metadata, via write blocker til en ren måldisk.</div></li>
+    <li><div><strong>Verifiser hash.</strong> Kilde og image skal ha lik MD5/SHA-256. Skriv begge inn i notatene.</div></li>
+    <li><div><strong>Legg originalen tilbake i sikker lagring</strong> og jobb kun på en arbeidskopi av imaget.</div></li>
+  </ol>
+  <div class="info"><strong>ACPO sine fire prinsipper i én setning hver</strong>
+    <ul>
+      <li>Ikke endre data som kan bli bevis.</li>
+      <li>Må du røre originaldata, skal du være kompetent til det og kunne forklare konsekvensene.</li>
+      <li>Før en logg over alt som gjøres, slik at en uavhengig tredjepart kan gjenta det.</li>
+      <li>Den som leder etterforskningen har ansvar for at loven og prinsippene følges.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <span class="eyebrow">Kilderegister</span>
+  <h2>Profesjonell dokumentasjon</h2>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Kilde</th><th>Hva den er</th><th>Faser</th><th>Tilgang</th></tr></thead>
+    <tbody>
+      <tr><td><a href="https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-86.pdf">NIST SP 800-86</a> (2006)</td><td>Guide to Integrating Forensic Techniques into Incident Response. Kilden til Collection/Examination/Analysis/Reporting.</td><td>Alle</td><td><span class="pill free">Gratis</span></td></tr>
+      <tr><td><a href="https://csrc.nist.gov/pubs/sp/800/61/r3/final">NIST SP 800-61 rev. 3</a> (2025)</td><td>Hendelseshåndtering. Nyttig når forensikk er en del av en sikkerhetshendelse.</td><td>Identifisering</td><td><span class="pill free">Gratis</span></td></tr>
+      <tr><td><a href="https://www.rfc-editor.org/rfc/rfc3227">RFC 3227</a></td><td>Guidelines for Evidence Collection and Archiving. Kort og klassisk om rekkefølge etter flyktighet.</td><td>Identifisering, Preservering</td><td><span class="pill free">Gratis</span></td></tr>
+      <tr><td><a href="https://www.iso.org/standard/44381.html">ISO/IEC 27037</a></td><td>Identifisering, innsamling, anskaffelse og bevaring av digitale bevis.</td><td>Identifisering, Preservering</td><td><span class="pill paid">Betalt</span></td></tr>
+      <tr><td><a href="https://www.iso.org/standard/44405.html">ISO/IEC 27041</a></td><td>Sikre at undersøkelsesmetodene er egnet og validert.</td><td>Analyse</td><td><span class="pill paid">Betalt</span></td></tr>
+      <tr><td><a href="https://www.iso.org/standard/44406.html">ISO/IEC 27042</a></td><td>Analyse og tolkning av digitale bevis.</td><td>Analyse, Presentasjon</td><td><span class="pill paid">Betalt</span></td></tr>
+      <tr><td><a href="https://www.iso.org/standard/44407.html">ISO/IEC 27043</a></td><td>Overordnet prosessmodell for hendelsesetterforskning.</td><td>Alle</td><td><span class="pill paid">Betalt</span></td></tr>
+      <tr><td><a href="https://training-on-eppo.era.int/EPPO/kiosk/pdf/ACPO_Good_Practice_Guide.pdf">ACPO Good Practice Guide v5</a> (2012)</td><td>Britisk politiveileder med de fire prinsippene som siteres overalt.</td><td>Preservering, Dokumentasjon</td><td><span class="pill free">Gratis</span></td></tr>
+      <tr><td><a href="https://www.gov.uk/government/publications/statutory-code-of-practice-for-forensic-science-activities">FSR Code of Practice</a></td><td>Britisk lovpålagt kvalitetskrav for forensiske aktiviteter, inkludert digitale.</td><td>Analyse, Presentasjon</td><td><span class="pill free">Gratis</span></td></tr>
+      <tr><td><a href="https://www.swgde.org/documents/published-complete-listing/">SWGDE</a></td><td>Amerikanske best practices. Start med <a href="https://www.swgde.org/wp-content/uploads/2024/03/2023-06-15-SWGDE-Best-Practices-for-Computer-Forensic-Acquisitions-17-F-002-2.0.pdf">Computer Forensic Acquisitions</a>.</td><td>Preservering</td><td><span class="pill free">Gratis</span></td></tr>
+      <tr><td><a href="https://www.nist.gov/itl/ssd/software-quality-group/computer-forensics-tool-testing-program-cftt">NIST CFTT</a></td><td>Uavhengige testrapporter for write blockere og imaging-verktøy, blant annet Tableau.</td><td>Preservering</td><td><span class="pill free">Gratis</span></td></tr>
+      <tr><td><a href="https://unodc.org/e4j/data/_university_uni_/best_practice_manual_for_the_forensic_examination_of_digital_technology.html?lng=en">ENFSI BPM-FIT</a> (2015)</td><td>Europeisk beste praksis for undersøkelse av digital teknologi.</td><td>Alle</td><td><span class="pill">Via ENFSI</span></td></tr>
+      <tr><td><a href="https://www.forensicfocus.com/articles/writing-dfir-reports-a-primer/">Writing DFIR Reports: A Primer</a></td><td>Josh Brunty, Forensic Focus 2021. Lenken fra lysbildet, med en ferdig rapportmal.</td><td>Dokumentasjon, Presentasjon</td><td><span class="pill free">Gratis</span></td></tr>
+      <tr><td><a href="https://www.wiley-vch.de/en/areas-interest/natural-sciences/digital-forensics-978-1-119-26238-1">Årnes (red.): Digital Forensics</a> (Wiley 2017)</td><td>Lærebok skrevet av norske fagfolk fra NTNU- og politimiljøet.</td><td>Alle</td><td><span class="pill paid">Bok</span></td></tr>
+      <tr><td><a href="https://nsm.no/getfile.php/1313975-1717589722/NSM/Filer/Dokumenter/Veiledere/NSMs%20Grunnprinsipper%20for%20IKT-sikkerhet%20v2.1.pdf">NSMs grunnprinsipper for IKT-sikkerhet v2.1</a></td><td>Norsk. Kategori 4, «Håndtere og gjenopprette», dekker hendelseshåndtering.</td><td>Identifisering</td><td><span class="pill free">Gratis</span></td></tr>
+      <tr><td><a href="https://lovdata.no/dokument/NL/lov/1981-05-22-25">Straffeprosessloven</a></td><td>Norsk hjemmel for beslag (kap. 16) og tilgang til datasystemer (§ 199 a).</td><td>Identifisering</td><td><span class="pill free">Gratis</span></td></tr>
+    </tbody>
+  </table></div>
+  <p class="src">ISO-standardene kan kjøpes via Standard Norge. Sjekk om biblioteket på Kristiania har tilgang før du betaler.</p>
+</section>
+
+<footer>Laget 10. oktober 2026 for William, Digital forensic lab. Lenkene ble kontrollert samme dag. Lysbildeinnholdet er fra Høyskolen Kristiania. Offline-kopi av <a href="https://claude.ai/artifact/CVmDNB51dULi39TnRrnmZ2">nettversjonen</a>.</footer>
+</div>
+</body>
+</html>
