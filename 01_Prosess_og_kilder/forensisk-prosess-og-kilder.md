@@ -4,8 +4,6 @@
 
 Gjennomgang av forelesningsbildene «Prosessen» og «Forensics report», med de profesjonelle standardene og veiledningene som beskriver riktig startprosedyre.
 
-Nettversjon: https://claude.ai/artifact/CVmDNB51dULi39TnRrnmZ2
-
 ---
 
 ## Lysbilde 1: Prosessen, fase for fase
