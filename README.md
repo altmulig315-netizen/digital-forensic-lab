@@ -1,6 +1,6 @@
 # Digital forensic lab
 
-Notater fra Digital forensic lab ved Høyskolen Kristiania, koblet til de profesjonelle standardene og veiledningene som beskriver god praksis.
+Digital forensic lab i et tidlige stadie, den er koblet til de profesjonelle standardene og veiledningene som beskriver god praksis.
 
 ## Innhold
 
